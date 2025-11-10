@@ -86,4 +86,8 @@ docker-compose.override.yml
 /services/*/.cache/
 
 # ---------------------------------
-# Testing / Temp
+# Testing / Temporary
+# ---------------------------------
+.jest/
+__tests__/coverage/
+.nyc_output/
