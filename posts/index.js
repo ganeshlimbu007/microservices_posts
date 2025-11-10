@@ -5,6 +5,8 @@ const posts = {};
 const { randomBytes } = require("crypto");
 
 const app = express();
+const cors = require("cors");
+app.use(cors());
 
 app.use(express.json());
 app.use(bodyParser.json());

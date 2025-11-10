@@ -1,0 +1,97 @@
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+
+interface Comment {
+  id?: string;
+  content: string;
+}
+
+interface PostItemProps {
+  postId: string;
+  title: string;
+}
+
+const PostItem: React.FC<PostItemProps> = ({ postId, title }) => {
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [newComment, setNewComment] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // ✅ Fetch comments for each post
+  const fetchComments = async () => {
+    try {
+      const res = await axios.get<Comment[]>(
+        `http://localhost:4001/posts/${postId}/comments`
+      );
+      setComments(res.data);
+    } catch (err: any) {
+      console.error(`Error fetching comments for ${postId}:`, err.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchComments();
+  }, [postId]);
+
+  // ✅ Add new comment
+  const handleAddComment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newComment.trim()) return;
+
+    setLoading(true);
+    try {
+      await axios.post(`http://localhost:4001/posts/${postId}/comments`, {
+        content: newComment,
+      });
+      setNewComment("");
+      await fetchComments();
+    } catch (err: any) {
+      console.error("Error posting comment:", err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <li className="border p-4 rounded-lg bg-white shadow-sm hover:shadow-md transition">
+      <h4 className="font-semibold mb-2">{title}</h4>
+
+      {/* ✅ Comments list */}
+      <div className="mb-3">
+        {comments.length === 0 ? (
+          <p className="text-sm text-gray-500">No comments yet.</p>
+        ) : (
+          <ul className="space-y-1">
+            {comments.map((c) => (
+              <li
+                key={c.id || c.content}
+                className="text-sm border-b border-gray-100 pb-1"
+              >
+                💬 {c.content}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {/* ✅ Add comment form */}
+      <form onSubmit={handleAddComment} className="flex space-x-2">
+        <input
+          type="text"
+          value={newComment}
+          onChange={(e) => setNewComment(e.target.value)}
+          placeholder="Add a comment..."
+          className="flex-1 border p-1 rounded focus:outline-none focus:ring"
+        />
+        <button
+          type="submit"
+          disabled={loading}
+          className="bg-green-500 hover:bg-green-600 text-white px-3 rounded text-sm"
+        >
+          {loading ? "..." : "Add"}
+        </button>
+      </form>
+    </li>
+  );
+};
+
+export default PostItem;
