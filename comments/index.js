@@ -13,9 +13,9 @@ app.use(bodyParser.json());
 
 app.get("/posts/:id/comments", (req, res) => {
   if (!commentsByPostId[req.params.id]) {
-    throw new Error("Post not found");
+    res.status(201).send([]);
   }
-  res.send(commentsByPostId[req.params.id] || []);
+  res.status(201).send(commentsByPostId[req.params.id] || []);
 });
 
 app.post("/posts/:id/comments", (req, res) => {
@@ -29,6 +29,12 @@ app.post("/posts/:id/comments", (req, res) => {
   commentsByPostId[req.params.id] = comments;
 
   res.status(201).send(comment);
+});
+
+app.post("/events", (req, res) => {
+  const event = req.body.event || {};
+  console.log("Received Event:", event);
+  res.send({ ...event });
 });
 
 app.delete("/posts/:id/comments", (req, res) => {

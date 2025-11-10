@@ -1,4 +1,5 @@
 const express = require("express");
+const axios = require("axios");
 const bodyParser = require("body-parser");
 
 const posts = {};
@@ -15,12 +16,24 @@ app.get("/posts", (req, res) => {
   res.send(posts);
 });
 
-app.post("/posts", (req, res) => {
+app.post("/posts", async (req, res) => {
   const id = randomBytes(4).toString("hex");
   const { title } = req.body;
   const post = { id, title };
   posts[id] = post;
+
+  await axios.post("http://localhost:4005/events", {
+    type: "PostCreated",
+    data: post,
+  });
+
   res.status(201).send(post);
+});
+
+app.post("/events", (req, res) => {
+  const event = req.body.event || {};
+  console.log("Received Event:", event);
+  res.send({ ...event });
 });
 
 app.delete("/posts/:id", (req, res) => {
