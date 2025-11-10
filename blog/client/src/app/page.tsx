@@ -6,6 +6,7 @@ import PostItem from "@/components/comment";
 interface Post {
   title: string;
   id?: string;
+  comments?: Array<{ id: string; content: string }>;
 }
 type PostReq = Record<string, Post>;
 
@@ -25,7 +26,12 @@ const AddPostForm: React.FC = () => {
     setMessage(null);
 
     try {
-      const res = await axios.post("http://localhost:4000/posts", post);
+      const res = await axios.post("http://localhost:4002/events", {
+        type: "PostCreated",
+        data: {
+          title: post.title,
+        },
+      });
       setMessage(`✅ Post created: ${res.data.title}`);
       setPost({ title: "" });
       fetchPosts(); // Refresh the posts list
@@ -39,8 +45,13 @@ const AddPostForm: React.FC = () => {
   // ✅ Fetch all posts
   const fetchPosts = async () => {
     try {
-      const res = await axios.get<Post[]>("http://localhost:4000/posts");
-      setPosts(res.data);
+      const { data } = await axios.get<PostReq[]>(
+        "http://localhost:4002/posts"
+      );
+
+      const allPosts = Object.values(data);
+      console.log("Fetched posts:", allPosts);
+      setPosts(allPosts);
     } catch (err: any) {
       console.error("Error fetching posts:", err.message);
     }
@@ -89,7 +100,13 @@ const AddPostForm: React.FC = () => {
         ) : (
           <ul className="space-y-2">
             {Object.entries(posts).map(([key, p]) => (
-              <PostItem key={key} postId={key} title={p.title} />
+              <PostItem
+                key={key}
+                postId={p.id || ""}
+                title={p.title}
+                comments={p.comments || []}
+                updatePosts={fetchPosts}
+              />
             ))}
           </ul>
         )}

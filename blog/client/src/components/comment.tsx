@@ -9,28 +9,18 @@ interface Comment {
 interface PostItemProps {
   postId: string;
   title: string;
+  comments: Comment[];
+  updatePosts: () => void;
 }
 
-const PostItem: React.FC<PostItemProps> = ({ postId, title }) => {
-  const [comments, setComments] = useState<Comment[]>([]);
+const PostItem: React.FC<PostItemProps> = ({
+  postId,
+  title,
+  comments,
+  updatePosts,
+}) => {
   const [newComment, setNewComment] = useState("");
   const [loading, setLoading] = useState(false);
-
-  // ✅ Fetch comments for each post
-  const fetchComments = async () => {
-    try {
-      const res = await axios.get<Comment[]>(
-        `http://localhost:4001/posts/${postId}/comments`
-      );
-      setComments(res.data);
-    } catch (err: any) {
-      console.error(`Error fetching comments for ${postId}:`, err.message);
-    }
-  };
-
-  useEffect(() => {
-    fetchComments();
-  }, [postId]);
 
   // ✅ Add new comment
   const handleAddComment = async (e: React.FormEvent) => {
@@ -39,11 +29,15 @@ const PostItem: React.FC<PostItemProps> = ({ postId, title }) => {
 
     setLoading(true);
     try {
-      await axios.post(`http://localhost:4001/posts/${postId}/comments`, {
-        content: newComment,
+      await axios.post("http://localhost:4002/events", {
+        type: "CommentCreated",
+        data: {
+          postId,
+          content: newComment,
+        },
       });
       setNewComment("");
-      await fetchComments();
+      updatePosts();
     } catch (err: any) {
       console.error("Error posting comment:", err.message);
     } finally {
