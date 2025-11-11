@@ -6,7 +6,11 @@ import PostItem from "@/components/comment";
 interface Post {
   title: string;
   id?: string;
-  comments?: Array<{ id: string; content: string }>;
+  comments?: Array<{
+    id: string;
+    content: string;
+    status: "pending" | "approved" | "rejected";
+  }>;
 }
 type PostReq = Record<string, Post>;
 

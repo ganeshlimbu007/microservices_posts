@@ -4,6 +4,7 @@ import axios from "axios";
 interface Comment {
   id?: string;
   content: string;
+  status: "pending" | "approved" | "rejected";
 }
 
 interface PostItemProps {
@@ -29,7 +30,7 @@ const PostItem: React.FC<PostItemProps> = ({
 
     setLoading(true);
     try {
-      await axios.post("http://localhost:4002/events", {
+      await axios.post(`http://localhost:4001/posts/${postId}/comments`, {
         type: "CommentCreated",
         data: {
           postId,
@@ -45,6 +46,28 @@ const PostItem: React.FC<PostItemProps> = ({
     }
   };
 
+  const renderComments = () => {
+    return comments.map((c) => (
+      <li
+        key={c.id || c.content}
+        className={`text-sm border-b border-gray-100 pb-1 ${
+          c.status === "pending"
+            ? "italic text-gray-400"
+            : c.status === "rejected"
+            ? "line-through text-red-400"
+            : ""
+        }`}
+      >
+        💬{" "}
+        {c.status === "pending"
+          ? "Comment waiting moderation "
+          : c.status === "rejected"
+          ? "Comment Rejected"
+          : c.content}
+      </li>
+    ));
+  };
+
   return (
     <li className="border p-4 rounded-lg bg-white shadow-sm hover:shadow-md transition">
       <h4 className="font-semibold mb-2">{title}</h4>
@@ -54,16 +77,7 @@ const PostItem: React.FC<PostItemProps> = ({
         {comments.length === 0 ? (
           <p className="text-sm text-gray-500">No comments yet.</p>
         ) : (
-          <ul className="space-y-1">
-            {comments.map((c) => (
-              <li
-                key={c.id || c.content}
-                className="text-sm border-b border-gray-100 pb-1"
-              >
-                💬 {c.content}
-              </li>
-            ))}
-          </ul>
+          <ul className="space-y-1">{renderComments()}</ul>
         )}
       </div>
 
