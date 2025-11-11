@@ -43,5 +43,8 @@ app.delete("/posts/:id", (req, res) => {
 });
 
 app.listen(4000, () => {
+  console.log("hello V2.0");
+  console.log("hello V3.0");
+  console.log("hello V4.0");
   console.log("Posts service listening on port 4000");
 });
