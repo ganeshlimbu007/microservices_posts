@@ -30,7 +30,7 @@ const AddPostForm: React.FC = () => {
     setMessage(null);
 
     try {
-      const res = await axios.post("http://localhost:4002/events", {
+      const res = await axios.post("https://chatjpt.com//events", {
         type: "PostCreated",
         data: {
           title: post.title,
@@ -39,8 +39,9 @@ const AddPostForm: React.FC = () => {
       setMessage(`✅ Post created: ${res.data.title}`);
       setPost({ title: "" });
       fetchPosts(); // Refresh the posts list
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      setMessage(`❌ Error: ${err.response?.data?.message || err.message}`);
+      setMessage(`❌ Error: ${err?.response?.data?.message || err.message}`);
     } finally {
       setLoading(false);
     }
@@ -49,15 +50,13 @@ const AddPostForm: React.FC = () => {
   // ✅ Fetch all posts
   const fetchPosts = async () => {
     try {
-      const { data } = await axios.get<PostReq[]>(
-        "http://localhost:4002/posts"
-      );
+      const { data } = await axios.get("https://chatjpt.com//posts");
 
-      const allPosts = Object.values(data);
+      const allPosts: Post[] = Object.values(data);
       console.log("Fetched posts:", allPosts);
       setPosts(allPosts);
-    } catch (err: any) {
-      console.error("Error fetching posts:", err.message);
+    } catch (err) {
+      console.error("Error fetching posts:", err);
     }
   };
 

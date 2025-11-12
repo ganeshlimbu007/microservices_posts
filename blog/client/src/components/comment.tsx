@@ -30,7 +30,7 @@ const PostItem: React.FC<PostItemProps> = ({
 
     setLoading(true);
     try {
-      await axios.post(`http://localhost:4001/posts/${postId}/comments`, {
+      await axios.post(`http:https://chatjpt.com/${postId}/comments`, {
         type: "CommentCreated",
         data: {
           postId,
