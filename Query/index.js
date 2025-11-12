@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const { randomBytes } = require("crypto");
+const axios = require("axios");
 const app = express();
 const cors = require("cors");
 app.use(cors());
@@ -55,9 +56,9 @@ app.post("/events", (req, res) => {
 });
 
 app.listen(4002, async () => {
-  console.log("Posts service listening on port 4002");
-
-  const res = await axios("http://localhost:4005/events");
+  console.log("Posts service listening on port 4002 ");
+  console.log("V2.0");
+  const res = await axios("http://event-bus-srv:4005/events");
   for (let event of res.data) {
     console.log("Processing event:", event.type);
     handleEvent(event.type, event.data);

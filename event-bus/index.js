@@ -15,10 +15,10 @@ app.post("/events", (req, res) => {
   const event = req.body;
   console.log("Event Received:", event.type);
   events.push(event);
-
-  axios.post("http://localhost:4000/events", { ...event });
-  axios.post("http://localhost:4001/events", { ...event });
-  axios.post("http://localhost:4002/events", { ...event });
+  console.log("i am called event-bus");
+  axios.post("http://posts-clusterip-srv:4000/events", { ...event });
+  axios.post("http://comments-srv/events", { ...event });
+  axios.post("http://query-srv/events", { ...event });
   axios.post("http://localhost:4003/events", { ...event });
   res.send({ status: "OK" });
 });
@@ -28,5 +28,7 @@ app.get("/events", (req, res) => {
 });
 
 app.listen(4005, () => {
+  console.log("hello V12.0 event");
+
   console.log("Posts service listening on port 4005");
 });

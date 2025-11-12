@@ -17,12 +17,13 @@ app.get("/posts", (req, res) => {
 });
 
 app.post("/posts", async (req, res) => {
+  console.log("i am called posts");
   const id = randomBytes(4).toString("hex");
   const { title } = req.body;
   const post = { id, title };
   posts[id] = post;
 
-  await axios.post("http://localhost:4005/events", {
+  await axios.post("http://event-bus-srv:4005/events", {
     type: "PostCreated",
     data: post,
   });
@@ -43,8 +44,7 @@ app.delete("/posts/:id", (req, res) => {
 });
 
 app.listen(4000, () => {
-  console.log("hello V2.0");
-  console.log("hello V3.0");
-  console.log("hello V4.0");
+  console.log("hello V12.0");
+
   console.log("Posts service listening on port 4000");
 });
